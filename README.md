@@ -9,7 +9,7 @@ These case studies were created by [Data with Danny](https://www.linkedin.com/co
 ## 📚 Table of Contents
 
 Please find the solution links for the case studies below. Simply click on the links to access each solution.
-- [Case Study #1: Danny's Diner](https://github.com/Tlcke77/8-Week-SQL-Challenge/blob/main/README.md)
+- [Case Study #1: Danny's Diner](https://github.com/Tlcke77/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/README.md)
 - [Case Study #2: Pizza Runner] : In-progress
 - [Case Study #3: Foodie-Fi] : In-progress
 - [Case Study #4: Data Bank] : In-progress
