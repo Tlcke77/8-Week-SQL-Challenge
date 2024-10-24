@@ -5,7 +5,13 @@
 ## 📚 Table of Contents
 - [Business Task](#business-task)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
-- [Questions and Solutions](#questions-and-solutions)
+- [Data Cleaning](#-data-cleaning)
+- Solution
+  - [A. Pizza Metrics](#a-pizza-metrics)
+  - [B. Runner and Customer Experience](#b-runner-and-customer-experience)
+  - [C. Ingredient Optimisation](#c-ingredient-optimisation)
+  - [D. Pricing and Ratings](#d-pricing-and-ratings)
+
 
 All the information regarding this case study can be from the source using the following link: [here](https://8weeksqlchallenge.com/case-study-2/). 
 
@@ -13,6 +19,11 @@ I chose to use MySQL to solve this case study instead of the provided embedded D
 
 :warning: It's important to note that there is a discrepancy between the data shown in the "customer_orders" (2021) table on the [case study site](https://8weeksqlchallenge.com/case-study-2/) and the year provided in the INSERT command used to create and populate the database for the case study (2020). :warning:
 ***
+
+## Business Task
+Danny was convinced by the concept, but he realized that offering pizza alone wouldn’t secure the seed funding needed to grow his new Pizza Empire. To enhance his strategy, he had another brilliant idea: he would “Uberize” the delivery process. Thus, Pizza Runner was born!
+
+To kick things off, Danny recruited “runners” to deliver fresh pizzas from Pizza Runner Headquarters, which was essentially his home. He also maxed out his credit card to hire freelance developers to create a mobile app for customer orders.
 
 ## Entity Relationship Diagram
 
@@ -64,7 +75,7 @@ SET duration = TRIM(REPLACE(REPLACE(duration, 'minutes', ''), 'minute', ''));
 
 ***
 
-## Solution
+## Solutions
 
 ## A. Pizza Metrics
 
@@ -87,7 +98,7 @@ FROM customer_orders
 
 ***
 
-**2. How many unique customer orders were made?**
+### 2. How many unique customer orders were made?
 
 ```sql
 SELECT COUNT(DISTINCT order_id) AS unique_orders
@@ -106,7 +117,7 @@ FROM customer_orders
 
 ***
 
-**3. How many successful orders were delivered by each runner?**
+### 3. How many successful orders were delivered by each runner?
 
 ```sql
 SELECT runner_id, COUNT(order_id) AS successful_orders
@@ -132,7 +143,7 @@ GROUP BY runner_id
 
 ***
 
-**4. How many of each type of pizza was delivered?**
+### 4. How many of each type of pizza was delivered?
 
 ```sql
 SELECT pizza_name, COUNT(c.pizza_id) AS delivered
@@ -162,7 +173,7 @@ GROUP BY pizza_name
 
 ***
 
-**5. How many Vegetarian and Meatlovers were ordered by each customer?**
+### 5. How many Vegetarian and Meatlovers were ordered by each customer?
 
 ```sql
 SELECT customer_id, pizza_name, COUNT(c.pizza_id) AS ordered
@@ -201,7 +212,7 @@ ORDER BY customer_id
 - Customer 104 ordered meatlovers 3 times.
 - Customer 105 ordered vegetarian 1 times.
  
-###6. What was the maximum number of pizzas delivered in a single order?
+### 6. What was the maximum number of pizzas delivered in a single order?
 
 ```sql
 WITH pizza_cte AS 
@@ -233,7 +244,7 @@ FROM pizza_cte
 
 ***
 
-###7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+### 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 
 ```sql
 SELECT c.customer_id,
@@ -270,7 +281,7 @@ GROUP BY c.customer_id
 
 ***
 
-###8. How many pizzas were delivered that had both exclusions and extras?
+### 8. How many pizzas were delivered that had both exclusions and extras?
 
 ```sql
 SELECT
@@ -302,7 +313,7 @@ WHERE distance != 0
 
 ***
 
-**9. What was the total volume of pizzas ordered for each hour of the day?**
+### 9. What was the total volume of pizzas ordered for each hour of the day?
 
 ```sql
 SELECT HOUR(order_time) AS hour_ordered, COUNT(order_id) AS total_ordered
@@ -334,7 +345,7 @@ ORDER BY hour_ordered ASC
 
 ***
 
-###10. What was the volume of orders for each day of the week?
+### 10. What was the volume of orders for each day of the week?
 
 ```sql
 SELECT DATE_FORMAT(order_time, '%W') AS weekday, COUNT(order_id) AS total_ordered
@@ -365,7 +376,7 @@ GROUP BY weekday_orderded
 
 ## B. Runner and Customer Experience
 
-###1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
+### 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 
 ```sql
 SELECT WEEK(registration_date, 1) AS registration_week, COUNT(runner_id) AS runner_signup
@@ -391,7 +402,7 @@ GROUP BY WEEK(registration_date, 1)
 
 ***
 
-###2. at was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+### 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
 
 ```sql
 SELECT runner_id, AVG(TIMESTAMPDIFF(MINUTE, order_time, pickup_time)) AS avg_pickup_time
@@ -420,7 +431,7 @@ GROUP BY runner_id
 
 ***
 
-###3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
+### 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 ```sql
 WITH cte AS
 (
@@ -453,7 +464,7 @@ GROUP BY cte.total_pizza_ordered
 
 ***
 
-###4. What was the average distance travelled for each customer?
+### 4. What was the average distance travelled for each customer?
 ```sql
 SELECT customer_id, AVG(distance) AS avg_distance
 FROM customer_orders AS c
@@ -484,7 +495,7 @@ GROUP BY customer_id
 
 ***
 
-###5. What was the difference between the longest and shortest delivery times for all orders?
+### 5. What was the difference between the longest and shortest delivery times for all orders?
 ```sql
 SELECT MAX(duration) - MIN(duration) AS difference
 FROM runner_orders
@@ -505,7 +516,7 @@ WHERE distance != 0
 
 ***
 
-###6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
+### 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 ```sql
 SELECT r.runner_id, c.order_id, r.distance,
   ROUND((r.distance/r.duration * 60), 2) AS speed
@@ -552,7 +563,7 @@ ORDER BY r.runner_id
     
 ***
 
-###7. What is the successful delivery percentage for each runner?
+### 7. What is the successful delivery percentage for each runner?
 ```sql
 SELECT runner_id, 
 	ROUND(100 * SUM(CASE WHEN distance = 0 THEN 0 ELSE 1 END) / COUNT(*), 0) AS percentage
