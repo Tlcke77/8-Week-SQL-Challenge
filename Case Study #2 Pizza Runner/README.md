@@ -27,7 +27,7 @@ To kick things off, Danny recruited “runners” to deliver fresh pizzas from P
 
 ## Entity Relationship Diagram
 
-![image]()
+![image](https://github.com/Tlcke77/pics/blob/main/piza%20erd.PNG)
 ***
 
 ## 🧼 Data Cleaning
