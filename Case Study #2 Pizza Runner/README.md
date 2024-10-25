@@ -587,4 +587,79 @@ GROUP BY runner_id
 - Runner 3 had a 50 percentage successful delivery rate.
 
 :grey_exclamation: It’s unfair to credit successful deliveries to runners since order cancellations are beyond their control. :grey_exclamation:
-  
+
+***
+
+## C. Ingredient Optimisation
+
+### 1. What are the standard ingredients for each pizza?
+```sql
+SELECT pizza_name, toppings
+FROM pizza_names AS pn
+JOIN pizza_recipes AS pr
+	ON pn.pizza_id = pr.pizza_id
+;
+```
+#### Steps:
+- **JOIN** the `pizza_names` and the `pizza_recipes` tables using the pizza_id.
+
+#### Answer:
+|  pizza_name | toppings |													
+| ----------- | ----------- |
+| Meatlovers  | 1, 2, 3, 4, 5, 6, 8, 10    |
+| Vegetarian  | 4, 6, 7, 9, 11, 12         |
+
+- The standard ingredient for the Meatlovers pizza is Bacon (1), BBQ Sauce (2), Beef (3), Cheese (4), Chicken (5), Mushrooms (6), Pepperoni (8), and Salami (10).
+- The standard ingredient for the Vegetarian pizza is Cheese (4), Mushrooms (6), Onions (7), Peppers (9), Tomatoes (11), and Tomato Sauce (12).
+
+***
+
+### 2. What was the most commonly added extra?
+```sql
+SELECT pt.topping_name, COUNT(*) AS times_added
+FROM customer_orders AS c
+JOIN pizza_toppings pt ON FIND_IN_SET(pt.topping_id, c.extras)
+WHERE c.extras IS NOT NULL
+GROUP BY pt.topping_name
+ORDER BY times_added DESC
+LIMIT 1
+;
+```
+#### Steps:
+- **JOIN** the `customer_orders` and the `pizza_toppings` tables using the pizza_id.
+	- Using **FIND_IN_SET(pt.topping_id, c.extras)**: This function splits the comma-separated extras values and checks if each topping ID matches.
+- Use **WHERE** to ensure that only valid extras values are considered (ignoring null values).
+
+#### Answer:
+|  topping_name | times_added |													
+| ----------- | ----------- |
+| Bacon  | 4   |
+
+- The most commonly added extra is Bacon.
+
+***
+
+### 3. What was the most common exclusions?
+```sql
+SELECT pt.topping_name, COUNT(*) AS times_added
+FROM customer_orders AS c
+JOIN pizza_toppings pt ON FIND_IN_SET(pt.topping_id, c.exclusions)
+WHERE c.exclusions IS NOT NULL
+GROUP BY pt.topping_name
+ORDER BY times_added DESC
+LIMIT 1
+;
+```
+#### Steps:
+- **JOIN** the `customer_orders` and the `pizza_toppings` tables using the pizza_id.
+	- Using **FIND_IN_SET(pt.topping_id, c.exclusions)**: This function splits the comma-separated extras values and checks if each topping ID matches.
+- Use **WHERE** to ensure that only valid extras values are considered (ignoring null values).
+
+#### Answer:
+|  topping_name | times_added |													
+| ----------- | ----------- |
+| Cheese  | 4   |
+
+- The most common exclusion is cheese.
+
+***
