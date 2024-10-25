@@ -13,7 +13,7 @@
   - [D. Pricing and Ratings](#d-pricing-and-ratings)
 
 
-All the information regarding this case study can be from the source using the following link: [here](https://8weeksqlchallenge.com/case-study-2/). 
+All the information regarding this case study can be found in the source using the following link: [here](https://8weeksqlchallenge.com/case-study-2/). 
 
 I chose to use MySQL to solve this case study instead of the provided embedded DB Fiddle, which defaults to PostgreSQL 13.
 
@@ -128,7 +128,7 @@ GROUP BY runner_id
 ```
 #### Steps:
 - Use **COUNT** to find all successful orders.
-- Usa a **WHERE** to eliminate orders that were not deilvered.
+- Usa a **WHERE** to eliminate orders that were not delivered.
 
 #### Answer:
 | runner_id | successful_orders |
@@ -204,13 +204,13 @@ ORDER BY customer_id
 | 105           | Vegetarian        |  1   |
 
 - Customer 101 ordered meatlovers 2 times.
-- Customer 101 ordered vegetarian 1 times.
+- Customer 101 ordered vegetarian 1 time.
 - Customer 102 ordered meatlovers 2 times.
-- Customer 102 ordered vegetarian 1 times.
+- Customer 102 ordered vegetarian 1 time.
 - Customer 103 ordered meatlovers 3 times.
-- Customer 103 ordered vegetarian 1 times.
+- Customer 103 ordered vegetarian 1 time.
 - Customer 104 ordered meatlovers 3 times.
-- Customer 105 ordered vegetarian 1 times.
+- Customer 105 ordered vegetarian 1 time.
  
 ### 6. What was the maximum number of pizzas delivered in a single order?
 
@@ -545,21 +545,21 @@ ORDER BY r.runner_id
 | 2           | 7 | 25        | 60    | 
 | 3           | 5 | 10        | 40    | 
 
-- On order 1 runner 1 had an avergage speed of 37.5.
-- On order 2 runner 1 had an avergage speed of 44.44.
-- On order 3 runner 1 had an avergage speed of 40.2.
-- On order 10 runner 1 had an avergage speed of 60.
-- On order 8 runner 2 had an avergage speed of 93.6.
-- On order 4 runner 2 had an avergage speed of 35.1.
-- On order 7 runner 2 had an avergage speed of 60.
-- On order 5 runner 3 had an avergage speed of 40.
+- On order 1, runner 1 had an average speed of 37.5.
+- On order 2, runner 1 had an average speed of 44.44.
+- On order 3, runner 1 had an average speed of 40.2.
+- On order 10, runner 1 had an average speed of 60.
+- On order 8, runner 2 had an average speed of 93.6.
+- On order 4, runner 2 had an average speed of 35.1.
+- On order 7, runner 2 had an average speed of 60.
+- On order 5, runner 3 had an average speed of 40.
   
 #### Observation:
 - Speed Variation:
-  - Runner 1 has different speeds for each order. For example, the speed ranges from 37.5 to 60, indicating inconsistent performance.
+  - Runner 1 has different speeds for each order. For example, the speed ranges from 37.5 to 60, indicating an inconsistent performance.
   - Runner 2 also shows significant speed differences, with a peak speed of 93.6 for order 8 and a low of 35.1 for order 4.
 - Distance and Speed Relationship:
-  - Shorter distances don’t always result in higher speeds. For instance, Runner 1 had a high speed of 60 over a distance of 10, but a lower speed of 44.44 over a longer distance of 20.
+  - Shorter distances don’t always result in higher speeds. For instance, Runner 1 had a high speed of 60 over a distance of 10, but a lower speed of 44.44 for a longer distance of 20.
     
 ***
 
@@ -609,8 +609,8 @@ JOIN pizza_recipes AS pr
 | Meatlovers  | 1, 2, 3, 4, 5, 6, 8, 10    |
 | Vegetarian  | 4, 6, 7, 9, 11, 12         |
 
-- The standard ingredient for the Meatlovers pizza is Bacon (1), BBQ Sauce (2), Beef (3), Cheese (4), Chicken (5), Mushrooms (6), Pepperoni (8), and Salami (10).
-- The standard ingredient for the Vegetarian pizza is Cheese (4), Mushrooms (6), Onions (7), Peppers (9), Tomatoes (11), and Tomato Sauce (12).
+- The standard ingredient for the Meatlovers pizza are Bacon (1), BBQ Sauce (2), Beef (3), Cheese (4), Chicken (5), Mushrooms (6), Pepperoni (8), and Salami (10).
+- The standard ingredient for the Vegetarian pizza are Cheese (4), Mushrooms (6), Onions (7), Peppers (9), Tomatoes (11), and Tomato Sauce (12).
 
 ***
 
@@ -635,7 +635,7 @@ LIMIT 1
 | ----------- | ----------- |
 | Bacon  | 4   |
 
-- The most commonly added extra is Bacon.
+- The most commonly added extra topping is Bacon.
 
 ***
 
@@ -661,5 +661,167 @@ LIMIT 1
 | Cheese  | 4   |
 
 - The most common exclusion is cheese.
+
+***
+
+## D. Pricing and Ratings
+
+### 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
+```sql
+SELECT pizza_name, 
+	SUM(CASE WHEN c.pizza_id = 1 THEN 12 * 1 
+		WHEN c.pizza_id = 2 THEN 10 * 1  
+        ELSE 0
+        END) AS totalcost
+FROM customer_orders AS c
+JOIN pizza_names AS p
+	ON c.pizza_id = p.pizza_id
+GROUP BY pizza_name
+;
+```
+#### Steps:
+- Use a **CASE** to total the price of when a pizza is a Meatlovers or a Vegetarian.
+- **JOIN** the `customer_orders` and the `pizza_id` tables using the pizza_id.
+
+#### Answer:
+|  pizza_name | totalcost |													
+| ----------- | ----------- |
+| Meatlovers  | 120    |
+| Vegetarian  | 40     |
+
+- Pizza Runner would have made $160 so far.
+
+***
+
+### 3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
+
+### a. Creating the table
+```sql
+CREATE TABLE ratings (
+  rating_id INTEGER,
+  order_id INTEGER,
+  customer_id INTEGER,
+  runner_id INTEGER,
+  rating INTEGER,
+  rating_date TIMESTAMP
+)
+;
+```
+#### Answer:
+![image](https://github.com/Tlcke77/pics/blob/main/pizza%20erds.png)
+
+### b. Inserting data
+```sql
+INSERT INTO ratings (rating_id, order_id, customer_id, runner_id, rating, rating_date)
+VALUES
+    (1, 1, 101, 1, 5, '2020-01-01 18:30:00'),
+    (2, 2, 101, 1, 4, '2020-01-01 19:15:00'),
+    (3, 3, 102, 1, 5, '2020-01-02 23:55:00'),
+    (4, 4, 103, 2, 3, '2020-01-04 14:00:00'),
+    (5, 5, 104, 3, 4, '2020-01-08 21:05:00'),
+    (6, 7, 105, 2, 5, '2020-01-08 21:25:00'),
+    (7, 8, 102, 2, 2, '2020-01-09 00:00:00'),
+    (8, 10, 104, 1, 4, '2020-01-11 19:00:00')
+;
+```
+
+***
+
+### 4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
+- customer_id
+- order_id
+- runner_id
+- rating
+- order_time
+- pickup_time
+- Time between order and pickup
+- Delivery duration
+- Average speed
+- Total number of pizzas
+```sql
+SELECT c.customer_id, c.order_id, ro.runner_id, 
+    AVG(r.rating) AS rating, 
+    MIN(c.order_time) AS order_time, 
+    MIN(ro.pickup_time) AS pickup_time, 
+    AVG(TIMESTAMPDIFF(MINUTE, c.order_time, ro.pickup_time)) AS avg_pickup_time,
+    MIN(ro.duration) AS duration, 
+    ROUND(AVG(ro.distance / NULLIF(ro.duration, 0) * 60), 2) AS speed, 
+    COUNT(DISTINCT c.pizza_id) AS ordered
+FROM customer_orders AS c
+JOIN runner_orders AS ro 
+	ON c.order_id = ro.order_id
+JOIN ratings AS r 
+	ON ro.order_id = r.order_id 
+WHERE ro.distance != 0
+GROUP BY c.customer_id, c.order_id, ro.runner_id
+ORDER BY c.order_id
+; 
+```
+#### Steps:
+- Use **AVG** to find the average time in minutes it took for each runner to arrive at the Pizza Runner HQ.
+- Calculate the speed using the formula (distance/duration) multiplied by 60 to convert to minutes.
+- **JOIN** the `customer_orders` and the `runner_orders` tables using the order_id.
+- **JOIN** the `customer_orders` and the `ratings` tables using the order_id.
+- Use **WHERE** Filter out orders with a distance of 0.
+
+#### Answer:
+| customer_id | order_id | runner_id | order_time | pickup_time | avg_pickup_time | duration | speed | ordered |
+| ----------- | ---------- | -------------| ----- |  ----------- | ---------- | -------------| ----- | ----- | 
+| 101           | 1 | 1        | 5.0000    | 2020-01-01 18:05:02          | 2020-01-01 18:15:34 | 10.0000        | 32   | 1 |
+| 101           | 2 | 1        | 4.0000    | 2020-01-01 19:00:52          | 2020-01-01 19:10:54 | 10.0000        | 27    | 1 |
+| 104           | 5 | 3        | 4.0000    | 2020-01-08 21:00:29          | 2020-01-08 21:10:57 | 10.0000        | 15    | 1 |
+| 105           | 7 | 2        | 5.0000    | 2020-01-08 21:20:29          | 2020-01-08 21:30:45 | 10.0000        | 25   | 1 |
+| 104           | 10 | 1        | 4.0000    | 2020-01-11 18:34:49         | 2020-01-11 18:50:20 | 15.0000        | 10    | 1 |
+| 102           | 8 | 2        | 2.0000    |  2020-01-09 23:54:33         | 2020-01-10 00:15:02 | 20.0000        | 15    | 1 |
+| 102           | 3 | 1        | 5.0000    | 2020-01-02 23:51:23          | 2020-01-03 00:12:37 | 21.0000        | 20    | 2 |
+| 103           | 4 | 2        | 3.0000    | 2020-01-04 13:23:46          | 2020-01-04 13:53:03 | 29.0000        | 40    | 2 |
+
+***
+
+### 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
+```sql
+SWITH TotalRevenue AS (
+    SELECT
+        SUM(CASE 
+            WHEN pn.pizza_name = 'Meatlovers' THEN 12 
+            WHEN pn.pizza_name = 'Vegetarian' THEN 10 
+            ELSE 0 
+        END) AS revenue
+    FROM customer_orders AS co
+    JOIN pizza_names AS pn
+	ON co.pizza_id = pn.pizza_id
+),
+TotalCosts AS (
+    SELECT
+        SUM(ro.distance * 0.30) AS total_cost
+    FROM runner_orders AS ro
+    WHERE ro.distance IS NOT NULL
+)
+SELECT
+    tr.revenue AS total_revenue,
+    tc.total_cost AS total_cost,
+    (tr.revenue - tc.total_cost) AS remaining_profit
+FROM TotalRevenue AS tr, TotalCosts AS tc
+;
+```
+#### Steps:
+- Calculate Total Revenue:
+	- Use a CTE named TotalRevenue.
+	- Sum the prices of pizzas sold based on their type:
+	- Meatlovers pizza costs $12.
+ 	- Vegetarian pizza costs $10.
+   	- Join customer_orders with pizza_names to get the pizza prices.
+- Calculate Total Costs:
+	- Use another CTE named TotalCosts.
+	- Sum the costs incurred by the runners based on the distance they traveled.
+	- Multiply the distance by $0.30 per kilometer.
+ 	- Ensure only valid distances (non-null) are considered.
+
+#### Answer:
+|  total_revenue | total_cost | remaining_profit |													
+| ----------- | ----------- |  ----------- |
+| 160  | 43.56    | 116.44    |
+
+- Pizza Runner would have $116.44 in remaining profit.
 
 ***
